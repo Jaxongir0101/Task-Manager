@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-
-import '../../thirdpage.dart';
+import 'package:taskmanager/database_helper.dart';
+import 'package:provider/provider.dart';
+import '../../main_provider.dart';
+import '../../models/task.dart';
+import '../widgets/task_item.dart';
+import 'thirdpage.dart';
 
 class SecondPage extends StatefulWidget {
   const SecondPage({Key? key}) : super(key: key);
@@ -10,7 +14,6 @@ class SecondPage extends StatefulWidget {
 }
 
 class _SecondPageState extends State<SecondPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,14 +108,9 @@ class _SecondPageState extends State<SecondPage> {
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF2E3A59)),
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.8,
-                          child: ListView.builder(
-                              itemCount: 50,
-                              itemBuilder: (BuildContext context, int index) {
-                                return taskItem();
-                              }),
-                        ),
+                       
+                       
+                        taskList()
                       ],
                     ));
               },
@@ -156,7 +154,7 @@ class _SecondPageState extends State<SecondPage> {
     );
   }
 
-  Widget taskItem() {
+  Widget taskItem(Task task) {
     return Column(
       children: [
         SizedBox(
@@ -168,7 +166,7 @@ class _SecondPageState extends State<SecondPage> {
               color: Colors.white, borderRadius: BorderRadius.circular(18)),
           child: ListTile(
             title: Text(
-              'Design Changes ',
+              task.title!,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text('2 Days ago'),
@@ -205,4 +203,29 @@ class _SecondPageState extends State<SecondPage> {
       ],
     );
   }
+
+ Widget taskList() {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height * .8,
+      child: Consumer<MainProvider>(
+        builder: (context, value, child) {
+          return FutureBuilder(
+            future: DatabaseHelper.intance.getTasks(),
+            builder: ((context, AsyncSnapshot<List<Task>> snapshot) {
+              return ListView.builder(
+                padding: EdgeInsets.only(bottom: 10, right: 10),
+                itemBuilder: (context, index) {
+                  return TaskItem(snapshot.data![index]);
+                },
+                itemCount: snapshot.data?.length ?? 0,
+              );
+            }),
+          );
+       
+        },
+      ),
+    );
+  }
+
+
 }

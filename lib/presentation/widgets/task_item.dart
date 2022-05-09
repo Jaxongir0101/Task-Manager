@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:taskmanager/main_provider.dart';
+import 'package:taskmanager/models/task.dart';
+import 'package:taskmanager/presentation/screens/thirdpage.dart';
+import 'package:provider/provider.dart';
+
 
 class TaskItem extends StatelessWidget {
-  const TaskItem({Key? key}) : super(key: key);
+  final Task task;
+  const TaskItem(this.task, {Key? key}) : super(key: key);
+
+  void taskItemList(context){
+    MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+    mainProvider.updateTaskList();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +28,10 @@ class TaskItem extends StatelessWidget {
               color: Colors.white, borderRadius: BorderRadius.circular(18)),
           child: ListTile(
             title: Text(
-              'Design Changes ',
+              task.title ?? "...",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            subtitle: Text('2 Days ago'),
+            subtitle: Text(task.startTime ?? "..."),
             trailing: PopupMenuButton(
               itemBuilder: (context) {
                 return [
@@ -34,7 +46,15 @@ class TaskItem extends StatelessWidget {
                 ];
               },
               onSelected: (String value) {
-                print('You Click on po up menu item');
+                if (value == "edit") {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ThirdPage(
+                        currentTask: task,
+                      ),
+                    ),
+                  ).then((value) =>taskItemList(context));
+                }
               },
             ),
             leading: Container(
