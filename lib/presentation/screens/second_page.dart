@@ -121,13 +121,17 @@ class _SecondPageState extends State<SecondPage> {
       ),
     );
   }
+void taskItemList(context){
+    MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+    mainProvider.updateTaskList();
 
+  }
   Widget addTaskButton() {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ThirdPage(),
-        ));
+        )).then((value) => taskItemList(context));
       },
       child: Container(
         height: 40,

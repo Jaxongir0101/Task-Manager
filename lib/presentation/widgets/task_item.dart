@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:taskmanager/database_helper.dart';
+
 import 'package:taskmanager/main_provider.dart';
 import 'package:taskmanager/models/task.dart';
 import 'package:taskmanager/presentation/screens/thirdpage.dart';
 import 'package:provider/provider.dart';
 
-
 class TaskItem extends StatelessWidget {
   final Task task;
   const TaskItem(this.task, {Key? key}) : super(key: key);
 
-  void taskItemList(context){
-    MainProvider mainProvider = Provider.of<MainProvider>(context, listen: false);
+  void updateTaskList(context) {
+    MainProvider mainProvider =
+        Provider.of<MainProvider>(context, listen: false);
     mainProvider.updateTaskList();
+  }
 
+  void deleteTask(context) async {
+    await DatabaseHelper.intance.delete(task.id!);
+
+    updateTaskList(context);
   }
 
   @override
@@ -47,14 +54,18 @@ class TaskItem extends StatelessWidget {
               },
               onSelected: (String value) {
                 if (value == "edit") {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => ThirdPage(
-                        currentTask: task,
-                      ),
-                    ),
-                  ).then((value) =>taskItemList(context));
-                }
+                  Navigator.of(context)
+                      .push(
+                        MaterialPageRoute(
+                          builder: (context) => ThirdPage(
+                            currentTask: task,
+                          ),
+                        ),
+                      )
+                      .then((value) => updateTaskList(context));
+                } else if (value == "delete") {
+                  deleteTask(context);
+                } 
               },
             ),
             leading: Container(

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:taskmanager/models/task.dart';
@@ -62,9 +63,18 @@ class DatabaseHelper {
     return tasks;
   }
 
-Future<int?> update(Task task) async{
-  final data = await db;
-  return await  data?.update(tableName, task.toMap(),
-   where:"$colId = ?",whereArgs: [task.id]); 
-}
+  Future<int?> update(Task task) async {
+    final data = await db;
+    return await data?.update(tableName, task.toMap(),
+        where: "$colId = ?", whereArgs: [task.id]);
+  }
+
+  Future<int?> delete(int task) async {
+    final data = await db;
+    return await data?.delete(
+      tableName,
+      where: '$colId = ?',
+      whereArgs: [task],
+    );
+  }
 }
